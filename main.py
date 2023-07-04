@@ -56,6 +56,18 @@ async def on_ready():
       if str(channel) == "test" :
         await channel.send('Bot Activated..')
 
+async def on_member_join(member):
+    channel = member.guild.get_channel(MY_GUILD)
+    await channel.send(f"Selamat datang {member.mention}!")
+
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandNotFound):
+        await ctx.send("Perintah tidak ditemukan.")
+    elif isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send("Argumen yang diperlukan tidak lengkap.")
+    else:
+        print(f"Terjadi error {error}")
+
 #membuat tree command slash yang berisikan beberapa perintah
 @bot.tree.command(guild=MY_GUILD)
 async def slash(interaction: discord.Interaction, number: int, string: str):
@@ -96,7 +108,15 @@ bot.tree.add_command(hello_context_menu,guild=MY_GUILD)
 
 
 @bot.command()
-#isi_pesan= pesan.content
+async def say(ctx, *, pesan):
+  await ctx.send(pesan)
+
+@bot.command()
+async def ulangi(ctx, times:int, *, pesan):
+  for _ in range(times):
+    await ctx.send(pesan)
+
+@bot.command()
 async def hi(ctx):
   await ctx.send("haii!")
 
@@ -127,7 +147,7 @@ async def info(ctx):
     embed.add_field(name="Server ID", value=id, inline=True)
     embed.add_field(name="Member Count", value=memberCount, inline=True)
     await ctx.send(embed=embed)
-  
+
 
 
 # Silence useless bug reports messages
@@ -628,6 +648,6 @@ logger.addHandler(handler)
 
 
 
-#keep_alive()
+keep_alive()
 bot.run(my_secret, log_handler=None)
       
